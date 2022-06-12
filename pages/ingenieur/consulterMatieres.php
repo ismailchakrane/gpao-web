@@ -1,8 +1,12 @@
 <?php
   session_start();
-  if(empty($_SESSION['auth']) ||  !isset($_SESSION['auth'])  || $_SESSION['auth']['role'] != 'ingenieur'){
+  if(empty($_SESSION['auth']) ){
     header("location: ../../auth/logout.php");
   }
+  else if($_SESSION['auth']['role'] != 'ingenieur'){
+    header('location: ../../index.php');
+  }
+
 
   require_once "../../Utils/Database.php";
   
@@ -284,7 +288,7 @@
           </li>
           
 
-          <li class="nav-item nav-category">Coneption</li>
+          <li class="nav-item nav-category">Conception</li>
           <li class="nav-item">
             <a class="nav-link" data-bs-toggle="collapse" href="#form-elements" aria-expanded="false" aria-controls="form-elements">
               <i class="menu-icon mdi mdi-basket"></i>

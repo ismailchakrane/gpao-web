@@ -1,8 +1,14 @@
 <?php
-session_start();
-if (empty($_SESSION['auth']) ||  !isset($_SESSION['auth'])  || $_SESSION['auth']['role'] != 'ingenieur') {
-  header("location: ../../auth/logout.php");
-}
+  session_start();
+  if(empty($_SESSION['auth']) ){
+    header("location: ../../auth/logout.php");
+  }
+  else if($_SESSION['auth']['role'] != 'ingenieur'){
+    header('location: ../../index.php');
+  }
+  else if(empty($_SESSION['id'])) {
+    header('location: consulterProduits.php');
+  }
 
 require_once "../../Utils/Database.php";
 $idProduct = $_SESSION['id'];
@@ -27,7 +33,7 @@ if (!empty($_POST)) {
   foreach ($mts as $m) {
     if (!empty($_POST[$m['code']])) {
         $values = array($_POST[$m['code']]);
-        Database::update("product_materials",array("id_product","id_material"),array($idP,$m['id']) ,$keys,$values);
+        Database::update("product_materials",array("id_product","id_material"),array($idP,$m['code']) ,$keys,$values);
         Database::update("product",array("code"),array($idP),array("dateE"),array(date("Y-m-d")));
       }
   };
@@ -35,7 +41,7 @@ if (!empty($_POST)) {
   unset($_SESSION['id']);
   header("location: consulterProduits.php");
 
-  
+
 }
 ?>
 <!DOCTYPE html>
@@ -313,7 +319,7 @@ if (!empty($_POST)) {
           </li>
 
 
-          <li class="nav-item nav-category">Coneption</li>
+          <li class="nav-item nav-category">Conception</li>
           <li class="nav-item">
             <a class="nav-link" data-bs-toggle="collapse" href="#form-elements" aria-expanded="false" aria-controls="form-elements">
               <i class="menu-icon mdi mdi-basket"></i>
@@ -323,7 +329,7 @@ if (!empty($_POST)) {
             <div class="collapse" id="form-elements">
               <ul class="nav flex-column sub-menu">
                 <li class="nav-item"><a class="nav-link" href="consulterProduits.php">Consulter les produits</a></li>
-                <li class="nav-item"><a class="nav-link" href="#">Ajouter un produit</a></li>
+                <li class="nav-item"><a class="nav-link" href="ajouterProduit.php">Ajouter un produit</a></li>
               </ul>
             </div>
           </li>
@@ -338,7 +344,7 @@ if (!empty($_POST)) {
             <div class="collapse" id="charts">
               <ul class="nav flex-column sub-menu">
                 <li class="nav-item"><a class="nav-link" href="consulterMatieres.php">Consulter les matières</a></li>
-                <li class="nav-item"><a class="nav-link" href="ajouterMatiere.php">Ajouter une matière</a></li>
+                <li class="nav-item"><a class="nav-link" href="#">Ajouter une matière</a></li>
               </ul>
             </div>
           </li>
@@ -429,7 +435,7 @@ if (!empty($_POST)) {
                     <div class="row">
                         <div class="col-md-6">
                         <div class="form-group row">
-                            <?php $nameMat =  Database::select( "materials", "id", $m['id_material']) ; ?>
+                            <?php $nameMat =  Database::select( "materials", "code", $m['id_material']) ; ?>
                           <label class="col-sm-6 col-form-label"><?php echo $nameMat[0]['name']; ?></label>
                         </div>
                         </div>

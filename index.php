@@ -15,10 +15,6 @@ if(!empty($_SESSION['auth']) && isset($_SESSION['auth'])){
             header('location: pages/chef de production/index.php');
             break;
 
-        case 'responsable de stock':
-            header('location: pages/chef de stock/index.php');
-            break;
-
         case 'responsable de commandes':
             header('location: pages/chef de commandes/index.php');
             break;

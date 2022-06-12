@@ -1,8 +1,12 @@
 <?php
-session_start();
-if (empty($_SESSION['auth']) ||  !isset($_SESSION['auth'])  || $_SESSION['auth']['role'] != 'ingenieur') {
-  header("location: ../../auth/logout.php");
-}
+  session_start();
+  if(empty($_SESSION['auth']) ){
+    header("location: ../../auth/logout.php");
+  }
+  else if($_SESSION['auth']['role'] != 'ingenieur'){
+    header('location: ../../index.php');
+  }
+  
 
 require_once "../../Utils/Database.php";
 if (!empty($_POST)) {
@@ -10,7 +14,6 @@ if (!empty($_POST)) {
   if (!empty($_POST["supprimer"])) {
     Database::delete("product", "code", $_POST["supprimer"]);
     Database::delete("product_materials", "id_product", $_POST["supprimer"]);
-    Database::delete("stock_produit", "id_produit", $_POST["supprimer"]);
     header("location: consulterProduits.php");
   }
   if(!empty($_POST["modifier"])){
@@ -90,7 +93,7 @@ if (!empty($_POST)) {
       <nav class="sidebar sidebar-offcanvas" id="sidebar">
         <ul class="nav">
 
-          <li class="nav-item nav-category">Coneption</li>
+          <li class="nav-item nav-category">Conception</li>
           <li class="nav-item">
             <a class="nav-link" data-bs-toggle="collapse" href="#form-elements" aria-expanded="false" aria-controls="form-elements">
               <i class="menu-icon mdi mdi-basket"></i>
@@ -186,7 +189,7 @@ if (!empty($_POST)) {
                               $i  = 1;
                               foreach ($materials as $m) {
 
-                                $nameMaterial = Database::select("materials", "id", $m['id_material']);
+                                $nameMaterial = Database::select("materials", "code", $m['id_material']);
                                 if ($i == 1)
                                   $materialsWithNames .= $nameMaterial[0]['name'] . '(' . $m['quantity'] . ')';
                                 else

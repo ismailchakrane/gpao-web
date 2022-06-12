@@ -16,7 +16,7 @@ if (!empty($_POST)) {
 
     foreach ($materials as $m) {
       $materialInStock = Database::select("stock_materials", "id_material", $m['id_material']);
-      $materialName = Database::select("materials", "id", $m['id_material']);
+      $materialName = Database::select("materials", "code", $m['id_material']);
 
       if ((intval($materialInStock[0]['quantity'])  - intval($_POST['quantite'])  * intval($m['quantity'])) < 0) {
         $prb .= "* " . abs(intval($materialInStock[0]['quantity'])  - intval($_POST['quantite'])  * intval($m['quantity'])) . " unité de " .  $materialName[0]['code']  . "<br/>";

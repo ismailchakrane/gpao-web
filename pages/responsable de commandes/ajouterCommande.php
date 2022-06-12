@@ -1,8 +1,11 @@
 <?php
-session_start();
-if (empty($_SESSION['auth']) ||  !isset($_SESSION['auth'])  || $_SESSION['auth']['role'] != 'responsable de commandes') {
-  header("location ../../auth/logout.php");
-}
+  session_start();
+  if(empty($_SESSION['auth']) ){
+    header("location: ../../auth/logout.php");
+  }
+  else if($_SESSION['auth']['role'] != 'responsable de commandes'){
+    header('location: ../../index.php');
+  }
 
 require_once "../../Utils/Database.php";
 
@@ -12,24 +15,26 @@ if (!empty($_POST)) {
   if(isset($_POST['ajouter'])){
 
     $pds = Database::selectAll("product");
-    $lenght = 0;
     $products = array();
     $quantites = array();
 
-  
     foreach ($pds as $p) {
 
       if(isset($_POST[$p['code']]) && $_POST[$p['code'] . 'Q'] != ""){
         array_push($products, $p['code']);
         array_push($quantites, $_POST[$p['code'] . 'Q']);
-        $lenght++;
       }
   }
 
-  $idCmd = Database::insert("commande",array("date","done"),array(date("Y-m-d"),0));
-  for ($i = 0; $i < count($products); $i++) {
-    Database::insert("commande_produits",array("idCommande","idProduit","quantite"),array($idCmd,$products[$i],$quantites[$i]));
+  if(!empty($products)){
+    $idCmd = Database::insert("commande",array("date","done"),array(date("Y-m-d"),0));
+    for ($i = 0; $i < count($products); $i++) {
+      Database::insert("commande_produits",array("idCommande","idProduit","quantite"),array($idCmd,$products[$i],$quantites[$i]));
+    }
+    $success = "Commande ajouté";
+  
   }
+ 
 
 }
 
@@ -311,7 +316,7 @@ if (!empty($_POST)) {
           </li>
 
 
-          <li class="nav-item nav-category">Coneption</li>
+          <li class="nav-item nav-category">Commandes</li>
           <li class="nav-item">
             <a class="nav-link" data-bs-toggle="collapse" href="#form-elements" aria-expanded="false" aria-controls="form-elements">
               <i class="menu-icon mdi mdi-basket"></i>
@@ -364,6 +369,13 @@ if (!empty($_POST)) {
                 <div class="card-body">
                   <h4 class="card-title">Ajouter une commande</h4>
                   <p class="card-description">Ajouter une nouvelle commande</p>
+                                        <?php if (isset($succes)) : ?>
+                                            <div class="form-group">
+                                                <div class="alert alert-success" role="alert">
+                                                    <?php echo $succes ?>
+                                                </div>
+                                            </div>
+                                        <?php endif; ?>
                   <form method="POST" action="">
 
                   <?php 
@@ -388,7 +400,7 @@ if (!empty($_POST)) {
                         <div class="form-group">
                         <div class="form-group row">
                       <div class="col-sm-9">
-                        <input type="number" class="form-control" name="<?php echo $p['code'] ?>Q" value="<?php echo $p['code'] ?>" id="exampleInputUsername2" placeholder="Quantité">
+                        <input type="number" class="form-control" name="<?php echo $p['code'] ?>Q" value="<?php echo $p['code'] ?>" id="exampleInputUsername2" placeholder="Quantité" >
                       </div>
                     </div>
                       </div>

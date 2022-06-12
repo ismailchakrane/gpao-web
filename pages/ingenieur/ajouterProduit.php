@@ -1,8 +1,12 @@
 <?php
 session_start();
-if (empty($_SESSION['auth']) ||  !isset($_SESSION['auth'])  || $_SESSION['auth']['role'] != 'ingenieur') {
+if (empty($_SESSION['auth'])) {
   header("location: ../../auth/logout.php");
+} else if ($_SESSION['auth']['role'] != 'ingenieur') {
+  header('location: ../../index.php');
 }
+
+
 
 require_once "../../Utils/Database.php";
 
@@ -11,24 +15,22 @@ if (!empty($_POST)) {
   if ($product) {
     $errors = "Produit déja existant";
   } else {
-    $keys = array("code", "name", "description", "creator", "dateE","state");
-    $values = array(str_replace(' ', '', $_POST["code"]), $_POST["nom"], $_POST["description"], $_SESSION['auth']['id'], date("Y-m-d"), "non bloque");
+    $keys = array("code", "name", "description", "creator", "dateE");
+    $values = array(str_replace(' ', '', $_POST["code"]), $_POST["nom"], $_POST["description"], $_SESSION['auth']['id'], date("Y-m-d"));
     Database::insert("product", $keys, $values);
 
     $keys = array("id_product", "id_material", "quantity");
     $mts = Database::selectAll("materials");
+    $stringMaterial = $_POST['materilas'];
+    
+
     foreach ($mts as $m) {
       if (!empty($_POST[$m['code']])) {
-        $qt = "q" .  $m['code']; // quantitté de chaque matiere
-        $values = array(str_replace(' ', '', $_POST["code"]), $m['id'], $_POST[$qt]);
+        $qt = "q" .  $m['code'];
+        $values = array(str_replace(' ', '', $_POST["code"]), $m['code'], $_POST[$qt]);
         Database::insert("product_materials", $keys, $values);
       }
     };
-
-    $keys = array("id_produit", "quantite");
-    $values = array(str_replace(' ', '', $_POST["code"]), "0");
-    Database::insert("stock_produit", $keys, $values);
-
   }
 }
 
@@ -50,6 +52,8 @@ if (!empty($_POST)) {
   <link rel="stylesheet" href="../../ressources/vendors/css/vendor.bundle.base.css">
   <link rel="stylesheet" href="../../ressources/css/vertical-layout-light/style.css">
   <link rel="shortcut icon" href="../../ressources/images/favicon.png" />
+
+
 </head>
 
 <body>
@@ -233,57 +237,84 @@ if (!empty($_POST)) {
                           <label class="col-sm-3 col-form-label">Description</label>
                           <div class="col-sm-9">
                             <input type="text" class="form-control" placeholder="description" name="description" required />
+
                           </div>
                         </div>
+
                       </div>
 
                       <div class="col-md-6">
                         <div class="form-group row">
-                          <ol id="appendUlItems">
-                          </ol>
-                          <div class="col-sm-4">
+                          <div class="col-sm-12">
+                            <input type="text" id="appendUlItems" class="form-control" placeholder="Matières ajoutées" name="materials" required />
                           </div>
-                          <div class="col-sm-5">
-                            <div class="form-check">
-                              <button type="button" id="ajoutMatiere" class="btn btn-primary btn-icon-text">
-                                Ajouter matière première
-                              </button>
-                            </div>
+                        </div>
+
+                      </div>
+
+
+
+
+                    </div>
+
+
+                    <div class="row">
+                      <div class="col-md-6">
+                        <div class="form-group row">
+                          <ol>
+                          </ol>
+
+
+                          <div class="form-check">
+                            <button type="button" id="ajoutMatiere" class="btn btn-primary btn-icon-text">
+                              Ajouter matière première
+                            </button>
                           </div>
                         </div>
                       </div>
-                    </div>
 
-                    <button style="transform: translateX(310%)" type="submit" class="btn btn-primary btn-icon-text">
-                      Ajouter le produit
-                    </button>
-                  </form>
+
+                      <div class="col-md-6">
+                        <div class="form-group row">
+                          <button type="submit" class="btn btn-primary btn-icon-text col-sm-5">
+                            Ajouter le produit
+                          </button>
+                        </div>
+                      </div>
+
+                    </div>
                 </div>
+                </form>
               </div>
             </div>
           </div>
         </div>
-        <script src="../../ressources/vendors/js/vendor.bundle.base.js"></script>
-        <script src="../../ressources/vendors/bootstrap-datepicker/bootstrap-datepicker.min.js"></script>
-        <script src="../../ressources/js/off-canvas.js"></script>
-        <script src="../../ressources/js/hoverable-collapse.js"></script>
-        <script src="../../ressources/js/template.js"></script>
-        <script src="../../ressources/js/settings.js"></script>
-        <script src="../../ressources/js/todolist.js"></script>
-        <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+      </div>
+      <script src="../../ressources/vendors/js/vendor.bundle.base.js"></script>
+      <script src="../../ressources/vendors/bootstrap-datepicker/bootstrap-datepicker.min.js"></script>
+      <script src="../../ressources/js/off-canvas.js"></script>
+      <script src="../../ressources/js/hoverable-collapse.js"></script>
+      <script src="../../ressources/js/template.js"></script>
+      <script src="../../ressources/js/settings.js"></script>
+      <script src="../../ressources/js/todolist.js"></script>
+      <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 
-        <script>
-          $(document).ready(function() {
-            $("#ajoutMatiere").click(function() {
-              matiere = $('#matiere').val();
-              quantité = $('#quantite').val();
+      <script>
+        $(document).ready(function() {
 
-              $("#appendUlItems").append('<li> ' + matiere + "  (" + quantité + ') </li>');
-              $("#appendUlItems").append('<input type="text" name="' + matiere + '" value="' + matiere + '" hidden/>');
-              $("#appendUlItems").append('<input type="text" name="q' + matiere + '" value="' + quantité + '" hidden/>');
-            });
+          $("#ajoutMatiere").click(function() {
+            matiere = $('#matiere').val();
+            quantité = $('#quantite').val();
+            if(quantité != ""){
+              $("#appendUlItems").val($("#appendUlItems").val() + matiere + ' (' + quantité + ')' + ', ');
+
+            }
+
           });
-        </script>
+        });
+      </script>
+
+
 </body>
 
 </html>

@@ -1,25 +1,23 @@
 <?php
-session_start();
-
-if(empty($_SESSION) || !isset($_SESSION['auth']) || $_SESSION['auth']['role'] != 'admin'){
+  session_start();
+  if(empty($_SESSION['auth']) ){
     header("location: ../../auth/logout.php");
-}
+  }
+  else if($_SESSION['auth']['role'] != 'admin'){
+    header('location: ../../index.php');
+  }
 
 require_once '../../Utils/Database.php';
 
 if (!empty($_POST)) {
     if ($_POST['password'] != $_POST['password2']) {
         $errors = "incorrect password !";
-    } else if (!empty(Database::select("employe", "username", strtolower($_POST['nom'] . '' . $_POST['prenom'])))) {
-        $errors = "Nom et prénom déja existe !";
+    } else if (!empty(Database::select("employe", "email",$_POST['email'] ))) {
+        $errors = "email déja existe !";
     } else {
-        $keys = array("username", "nom", "prenom", "email", "sexe", "role", "date_embauche","dateCreation");
-        $values = array(strtolower($_POST['nom'] . '' . $_POST['prenom']), $_POST['nom'], $_POST['prenom'], $_POST['email'], $_POST['sexe'], $_POST['role'], date("Y-m-d", strtotime($_POST['hiringDtae'])),date("Y-m-d"));
-        $lastInsertedId = Database::insert("employe", $keys, $values);
-
-        $keys = array("id", "password");
-        $values = array($lastInsertedId, $_POST['password']);
-        Database::insert("admin", $keys, $values);
+        $keys = array("nom", "prenom", "email","password", "sexe", "role", "date_embauche");
+        $values = array($_POST['nom'], $_POST['prenom'], $_POST['email'], $_POST['password']  ,$_POST['sexe'], $_POST['role'], date("Y-m-d", strtotime($_POST['hiringDtae'])));
+        Database::insert("employe", $keys, $values);
         $success = $_POST['role']. " bien crée !";
     }
 }
@@ -214,7 +212,7 @@ if (!empty($_POST)) {
                                             <div class="col-sm-4">
                                                 <div class="form-check">
                                                     <label class="form-check-label">
-                                                        <input type="radio" class="form-check-input" name="sexe" id="membershipRadios1" value="Femme" >
+                                                        <input type="radio" class="form-check-input" name="sexe" id="membershipRadios1" value="F" >
                                                         Femme
                                                     </label>
                                                 </div>
@@ -222,7 +220,7 @@ if (!empty($_POST)) {
                                             <div class="col-sm-4">
                                                 <div class="form-check">
                                                     <label class="form-check-label">
-                                                        <input type="radio" class="form-check-input" name="sexe" id="membershipRadios2" value="Homme" checked>
+                                                        <input type="radio" class="form-check-input" name="sexe" id="membershipRadios2" value="H" checked>
                                                         Homme
                                                     </label>
                                                 </div>
