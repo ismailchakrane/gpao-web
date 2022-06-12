@@ -355,13 +355,13 @@ if (!empty($_POST)) {
 
       <div class="main-panel">
         <div class="content-wrapper">
-        <div class="row">
+          <div class="row">
             <div class="col-lg-12 grid-margin stretch-card">
               <div class="card">
                 <div class="card-body">
                   <h4 class="card-title">Produits</h4>
                   <p class="card-description">
-                   Liste des produits</code>
+                    Liste des produits</code>
                   </p>
                   <div class="table-responsive">
                     <table class="table">
@@ -375,20 +375,30 @@ if (!empty($_POST)) {
                         </tr>
                       </thead>
                       <tbody>
-                        <tr>
-                          <td>P1</td>
-                          <td>produit 1</td>
-                          <td>ceci est un produit de test du produit 1</td>
-                          <td>12</td>
-                          <td><button type="button" class="btn btn-secondary">Lancer la fabrication</button></td>
-                        </tr>
+                        <?php
+
+                        $products = Database::selectAll("product");
+                        foreach ($products as $p) {
+
+                        ?>
+
+                          <tr>
+                            <td><?php echo $p['code'] ?></td>
+                            <td><?php echo $p['name'] ?></td>
+                            <td><?php echo $p['description'] ?></td>
+                            <td><?php echo $p['quantite'] ?></td>
+                            <form method="POST" action="">
+                              <td><button type="button" class="btn btn-secondary">Lancer la fabrication</button></td>
+                            </form>
+                          </tr>
+                        <?php } ?>
                       </tbody>
                     </table>
                   </div>
                 </div>
               </div>
             </div>
-           
+
 
 
 

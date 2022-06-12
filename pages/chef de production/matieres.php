@@ -8,11 +8,14 @@ if (empty($_SESSION['auth'])) {
 
 require_once "../../Utils/Database.php";
 if(!empty($_POST)){
-    var_dump($_POST);
-    die();
-if(isset($_POST['data'])){
-    echo "it worked";
-    die();
+
+if(isset($_POST['add'])){
+    $commandes = Database::selectAll("materials");
+    foreach ($commandes as $c) {
+        if($c['code'] == $_POST['add'] && $_POST['qt'] != ""){
+            Database::update("materials",array("code"),array($_POST['add']),array("quantite"),array(intval($c['quantite']) + intval($_POST['qt'])));
+        }
+    }
 }
 }
 ?>
@@ -353,7 +356,7 @@ if(isset($_POST['data'])){
                                                     <th>Nom</th>
                                                     <th>Description</th>
                                                     <th>Quantité</th>
-                                                    <th>Ajouter</th>
+                                                    <th></th>
                                                     <th>Action</th>
                                                 </tr>
                                             </thead>
@@ -370,8 +373,10 @@ if(isset($_POST['data'])){
                                                         <td><?php echo $c['name'] ?></td>
                                                         <td><?php echo $c['description'] ?></td>
                                                         <td><?php echo $c['quantite'] ?></td>
-                                                        <td><input type="text"></td>
-                                                        <td><button type="button" onclick="func<?php echo $c['code'] ?>()" class="btn btn-secondary">S'approvisionner</button></td>
+                                                        <form method="POST" action="">
+                                                        <td><input type="number" name="qt" placeholder="quantité"></td>
+                                                        <td><button type="submit" name="add" value="<?php echo $c['code'] ?>" class="btn btn-secondary">S'approvisionner</button></td>
+                                                        </form>
 
                                                     </tr>
                                                 <?php } ?>
