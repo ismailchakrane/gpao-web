@@ -1,23 +1,27 @@
 <?php
+session_start();
+
+if(!empty($_SESSION['auth'])){
+  header('location: ../pages/' . $_SESSION['auth']['role'] . '/index.php');
+}
 require_once '../Utils/Database.php';
 
 if (!empty($_POST)) {
-  $employe = Database::select("employe", "username", $_POST['Username']);
+  $employe = Database::select("employe", "email", $_POST['email']);
 
   if(!empty($employe)){
-    $user = Database::select("admin", "id", $employe[0]['id']);
-    if($user[0]['password'] == $_POST['Password'] ){ // it should be hashed but... later
+    if($employe[0]['password'] == $_POST['Password'] ){
       session_start();
       $_SESSION['auth'] = $employe[0];
       header('location: ../pages/' . $_SESSION['auth']['role'] . '/index.php');
       exit();
     } 
     else{
-      $errors = "username or password incorrect";
+      $errors = "email or password incorrect";
     }
   }
   else {
-    $errors = "no user was found";
+    $errors = "email or password incorrect";
   }
 }
 ?>
@@ -49,14 +53,14 @@ if (!empty($_POST)) {
               <div class="brand-logo">
                 <img src="../ressources/images/logo.svg" alt="logo">
               </div>
-              <h4>Bonjour veuillez</h4>
-              <h6 class="fw-light">Se connecter pour continuer.</h6>
+              <h4>Bonjour</h4>
+              <h6 class="fw-light">veuillez se connecter pour continuer</h6>
               <form class="pt-3" action="" method="POST">
                 <div class="form-group">
-                  <input type="text" class="form-control form-control-lg" id="exampleInputEmail1" placeholder="Username" name="Username" required>
+                  <input type="email" class="form-control form-control-lg" placeholder="Email" name="email" required>
                 </div>
                 <div class="form-group">
-                  <input type="password" class="form-control form-control-lg" id="exampleInputPassword1" placeholder="Password" name="Password" required>
+                  <input type="password" class="form-control form-control-lg" placeholder="Password" name="Password" required>
                 </div>
                 <div class="mt-4 form-group">
                   <button class="btn btn-block btn-primary btn-lg font-weight-medium auth-form-btn" type="submit">Se connecter</button>
@@ -68,7 +72,6 @@ if (!empty($_POST)) {
                     </div>
                   </div>
                 <?php endif; ?>
-
               </form>
             </div>
           </div>

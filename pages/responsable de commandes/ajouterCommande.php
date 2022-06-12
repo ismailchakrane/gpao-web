@@ -1,26 +1,39 @@
 <?php
-  session_start();
-  if(empty($_SESSION['auth']) ||  !isset($_SESSION['auth'])  || $_SESSION['auth']['role'] != 'ingenieur'){
-    header("location: ../../auth/logout.php");
-  }
-  require_once "../../Utils/Database.php";
+session_start();
+if (empty($_SESSION['auth']) ||  !isset($_SESSION['auth'])  || $_SESSION['auth']['role'] != 'responsable de commandes') {
+  header("location ../../auth/logout.php");
+}
 
-  if (!empty($_POST)) {
-    $product = Database::select("materials", "code", $_POST['code']);
-    if ($product) {
-      $errors = "Matière déja existante";
-    } else {
-      $keys = array("code", "name", "description", "creator", "dateCreation");
-      $values = array(str_replace(' ', '', $_POST["code"]), $_POST["nom"], $_POST["description"], $_SESSION['auth']['id'], date("Y-m-d"));
-      Database::insert("materials", $keys, $values);
+require_once "../../Utils/Database.php";
 
-      $keys = array("id_produit", "quantite");
-      $values = array(str_replace(' ', '', $_POST["code"]), "0");
-      Database::insert("stock_produit", $keys, $values);
+if (!empty($_POST)) {
 
-    }
-  }
+
+  if(isset($_POST['ajouter'])){
+
+    $pds = Database::selectAll("product");
+    $lenght = 0;
+    $products = array();
+    $quantites = array();
+
   
+    foreach ($pds as $p) {
+
+      if(isset($_POST[$p['code']]) && $_POST[$p['code'] . 'Q'] != ""){
+        array_push($products, $p['code']);
+        array_push($quantites, $_POST[$p['code'] . 'Q']);
+        $lenght++;
+      }
+  }
+
+  $idCmd = Database::insert("commande",array("date","done"),array(date("Y-m-d"),0));
+  for ($i = 0; $i < count($products); $i++) {
+    Database::insert("commande_produits",array("idCommande","idProduit","quantite"),array($idCmd,$products[$i],$quantites[$i]));
+  }
+
+}
+
+}
 
 ?>
 <!DOCTYPE html>
@@ -29,7 +42,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <title>Ingenieur GPAO</title>
+  <title>Responsable de sotck Admin</title>
   <link rel="stylesheet" href="../../ressources/vendors/feather/feather.css">
   <link rel="stylesheet" href="../../ressources/vendors/mdi/css/materialdesignicons.min.css">
   <link rel="stylesheet" href="../../ressources/vendors/ti-icons/css/themify-icons.css">
@@ -58,23 +71,23 @@
           </a>
         </div>
       </div>
-      <div class="navbar-menu-wrapper d-flex align-items-top"> 
+      <div class="navbar-menu-wrapper d-flex align-items-top">
         <ul class="navbar-nav">
           <li class="nav-item font-weight-semibold d-none d-lg-block ms-0">
             <h1 class="welcome-text">Bonjour, <span class="text-black fw-bold"><?php echo $_SESSION['auth']['nom'] . ' ' . $_SESSION['auth']['prenom']; ?></span></h1>
-            <h3 class="welcome-sub-text">Ingénieur</h3>
+            <h3 class="welcome-sub-text">Respondable de commandes</h3>
           </li>
         </ul>
         <ul class="navbar-nav ms-auto">
 
-         
+
           <li class="nav-item">
             <form class="search-form" action="#">
               <i class="icon-search"></i>
               <input type="search" class="form-control" placeholder="Search Here" title="Search here">
             </form>
           </li>
-          <li class="nav-item dropdown"> 
+          <li class="nav-item dropdown">
             <a class="nav-link count-indicator" id="countDropdown" href="#" data-bs-toggle="dropdown" aria-expanded="false">
               <i class="icon-bell"></i>
               <span class="count"></span>
@@ -87,7 +100,7 @@
               <div class="dropdown-divider"></div>
               <a class="dropdown-item preview-item">
                 <div class="preview-thumbnail">
-                  <img src="../../ressources/images/faces/face10.jpg" alt="image" class="img-sm profile-pic">
+                  <img src="../../images/faces/face10.jpg" alt="image" class="img-sm profile-pic">
                 </div>
                 <div class="preview-item-content flex-grow py-2">
                   <p class="preview-subject ellipsis font-weight-medium text-dark">Marian Garner </p>
@@ -96,7 +109,7 @@
               </a>
               <a class="dropdown-item preview-item">
                 <div class="preview-thumbnail">
-                  <img src="../../ressources/images/faces/face12.jpg" alt="image" class="img-sm profile-pic">
+                  <img src="../../images/faces/face12.jpg" alt="image" class="img-sm profile-pic">
                 </div>
                 <div class="preview-item-content flex-grow py-2">
                   <p class="preview-subject ellipsis font-weight-medium text-dark">David Grey </p>
@@ -105,7 +118,7 @@
               </a>
               <a class="dropdown-item preview-item">
                 <div class="preview-thumbnail">
-                  <img src="../../ressources/images/faces/face1.jpg" alt="image" class="img-sm profile-pic">
+                  <img src="../../images/faces/face1.jpg" alt="image" class="img-sm profile-pic">
                 </div>
                 <div class="preview-item-content flex-grow py-2">
                   <p class="preview-subject ellipsis font-weight-medium text-dark">Travis Jenkins </p>
@@ -117,7 +130,7 @@
           <li class="nav-item dropdown d-none d-lg-block user-dropdown">
             <a class="nav-link" id="UserDropdown" href="#" data-bs-toggle="dropdown" aria-expanded="false">
               <img class="img-xs rounded-circle" src="../../images/faces/face8.jpg" alt="Profile image"> </a>
-              <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="UserDropdown">
+            <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="UserDropdown">
               <div class="dropdown-header text-center">
                 <img class="img-md rounded-circle" src="images/faces/face8.jpg" alt="Profile image">
                 <p class="mb-1 mt-3 font-weight-semibold"><?php echo $_SESSION['auth']['nom'] . ' ' . $_SESSION['auth']['prenom']; ?></p>
@@ -134,7 +147,6 @@
         </button>
       </div>
     </nav>
-    <!-- partial -->
     <div class="container-fluid page-body-wrapper">
 
       <div id="right-sidebar" class="settings-panel">
@@ -232,7 +244,7 @@
             </div>
             <ul class="chat-list">
               <li class="list active">
-                <div class="profile"><img src="../../ressources/images/faces/face1.jpg" alt="image"><span class="online"></span></div>
+                <div class="profile"><img src="../../images/faces/face1.jpg" alt="image"><span class="online"></span></div>
                 <div class="info">
                   <p>Thomas Douglas</p>
                   <p>Available</p>
@@ -289,7 +301,7 @@
       </div>
 
 
-        <nav class="sidebar sidebar-offcanvas" id="sidebar">
+      <nav class="sidebar sidebar-offcanvas" id="sidebar">
         <ul class="nav">
           <li class="nav-item">
             <a class="nav-link" href="index.php">
@@ -297,7 +309,7 @@
               <span class="menu-title">Dashboard</span>
             </a>
           </li>
-          
+
 
           <li class="nav-item nav-category">Coneption</li>
           <li class="nav-item">
@@ -309,7 +321,7 @@
             <div class="collapse" id="form-elements">
               <ul class="nav flex-column sub-menu">
                 <li class="nav-item"><a class="nav-link" href="consulterProduits.php">Consulter les produits</a></li>
-                <li class="nav-item"><a class="nav-link" href="ajouterProduit.php">Ajouter un produit</a></li>
+                <li class="nav-item"><a class="nav-link" href="#">Ajouter un produit</a></li>
               </ul>
             </div>
           </li>
@@ -324,11 +336,11 @@
             <div class="collapse" id="charts">
               <ul class="nav flex-column sub-menu">
                 <li class="nav-item"><a class="nav-link" href="consulterMatieres.php">Consulter les matières</a></li>
-                <li class="nav-item"><a class="nav-link" href="#">Ajouter une matière</a></li>
+                <li class="nav-item"><a class="nav-link" href="ajouterMatiere.php">Ajouter une matière</a></li>
               </ul>
             </div>
           </li>
-          
+
 
           <li class="nav-item nav-category">help</li>
           <li class="nav-item">
@@ -340,64 +352,116 @@
         </ul>
       </nav>
 
+
       <div class="main-panel">
         <div class="content-wrapper">
           <div class="row">
-            
-            <div class="col-12 grid-margin stretch-card">
-                <div class="card">
-                  <div class="card-body">
-                    <h4 class="card-title">Ajouter Matière</h4>
-                    <p class="card-description">
-                      Ajouter une nouvelle matière première
-                    </p>
-                    <form class="forms-sample" method="POST" action="">
-                    <?php if (!empty($_POST)) { ?>
-                      <?php if (isset($errors)) : ?>
+
+
+
+          <div class="col-md-6 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <h4 class="card-title">Ajouter une commande</h4>
+                  <p class="card-description">Ajouter une nouvelle commande</p>
+                  <form method="POST" action="">
+
+                  <?php 
+                  $products = Database::selectAllByOrder("product");
+                            
+                  foreach ($products as $p) { 
+
+                  ?>
+
+                    <div class="row">
+                      <div class="col-md-6">
                         <div class="form-group">
-                          <div class="alert alert-danger" role="alert">
-                            <?php echo $errors ?>
+                          <div class="form-check">
+                            <label class="form-check-label">
+                              <input type="checkbox" name="<?php echo $p['code'] ?>" class="form-check-input">
+                              <?php echo $p['code'] ?>
+                            </label>
                           </div>
                         </div>
-                      <?php else : ?>
-                        <div class="form-group">
-                          <div class="alert alert-success" role="alert">
-                            <?php echo "Matière ajoutée" ?>
-                          </div>
-                        </div>
-                      <?php endif; ?>
-                    <?php } ?>
-
-                        <div class="form-group">
-                            <label for="exampleInputName1">Code</label>
-                            <input type="text" class="form-control" id="exampleInputName1" placeholder="code" name="code" required>
-                          </div>
-                      <div class="form-group">
-                        <label for="exampleInputName1">Nom</label>
-                        <input type="text" class="form-control" id="exampleInputName1" placeholder="Nom" name="nom" required>
                       </div>
-                      <div class="form-group">
-                        <label for="exampleInputName1">Description</label>
-                        <input type="text" class="form-control" id="exampleInputName1" placeholder="description" name="description" required>
+                      <div class="col-md-6">
+                        <div class="form-group">
+                        <div class="form-group row">
+                      <div class="col-sm-9">
+                        <input type="number" class="form-control" name="<?php echo $p['code'] ?>Q" value="<?php echo $p['code'] ?>" id="exampleInputUsername2" placeholder="Quantité">
                       </div>
+                    </div>
+                      </div>
+                    </div>
+                    </div>
+                  <?php } ?>
+                  <button type="submit" name="ajouter"  class="btn btn-primary me-2">Ajouter</button>
+                  </form>
+                </div>
 
-                      <button Style="transform: translateX(180%)" type="submit" class="btn btn-primary btn-icon-text">
-                                Ajouter matière première
-                     </button>
 
-                    </form>
+              </div>
+            </div>
+
+
+
+
+
+            <div class="col-lg-6 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <h4 class="card-title">Produits</h4>
+                  <p class="card-description">
+                    Liste des produits 
+                  </p>
+                  <div class="table-responsive">
+                    <table class="table table-hover">
+                      <thead>
+                  
+                        <tr>
+                          <th>Code</th>
+                          <th>Nom</th>
+                          <th>Description</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                   
+                      <?php
+                      $products = Database::selectAllByOrder("product");
+
+                      foreach ($products as $p) {  ?>
+                        <tr>
+                          <td><?php echo $p['code'] ?></td>
+                          <td><?php echo $p['name'] ?></td>
+                          <td><?php echo $p['description'] ?></td>
+                        </tr>
+                      <?php } ?>
+
+                      </tbody>
+                    </table>
                   </div>
                 </div>
               </div>
-    </div>
-  </div>
-  <script src="../../ressources/vendors/js/vendor.bundle.base.js"></script>
-  <script src="../../ressources/vendors/bootstrap-datepicker/bootstrap-datepicker.min.js"></script>
-  <script src="../../ressources/js/off-canvas.js"></script>
-  <script src="../../ressources/js/hoverable-collapse.js"></script>
-  <script src="../../ressources/js/template.js"></script>
-  <script src="../../ressources/js/settings.js"></script>
-  <script src="../../ressources/js/todolist.js"></script>
+            </div>
+
+
+
+
+
+
+
+
+
+          </div>
+        </div>
+        <script src="../../ressources/vendors/js/vendor.bundle.base.js"></script>
+        <script src="../../ressources/vendors/bootstrap-datepicker/bootstrap-datepicker.min.js"></script>
+        <script src="../../ressources/js/off-canvas.js"></script>
+        <script src="../../ressources/js/hoverable-collapse.js"></script>
+        <script src="../../ressources/js/template.js"></script>
+        <script src="../../ressources/js/settings.js"></script>
+        <script src="../../ressources/js/todolist.js"></script>
+
 </body>
 
 </html>

@@ -1,7 +1,7 @@
 <?php
 session_start();
 if (empty($_SESSION['auth']) ||  !isset($_SESSION['auth'])  || $_SESSION['auth']['role'] != 'ingenieur') {
-  header("location ../../auth/logout.php");
+  header("location: ../../auth/logout.php");
 }
 
 require_once "../../Utils/Database.php";

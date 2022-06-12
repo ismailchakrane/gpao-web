@@ -1,6 +1,6 @@
 <?php
-session_start();
 
+session_start();
 if(empty($_SESSION) || !isset($_SESSION['auth']) || $_SESSION['auth']['role'] != 'admin'){
     header("location: ../../auth/logout.php");
 }
@@ -8,22 +8,10 @@ if(empty($_SESSION) || !isset($_SESSION['auth']) || $_SESSION['auth']['role'] !=
 require_once '../../Utils/Database.php';
 
 if (!empty($_POST)) {
-    if ($_POST['password'] != $_POST['password2']) {
-        $errors = "incorrect password !";
-    } else if (!empty(Database::select("employe", "username", strtolower($_POST['nom'] . '' . $_POST['prenom'])))) {
-        $errors = "Nom et prénom déja existe !";
-    } else {
-        $keys = array("username", "nom", "prenom", "email", "sexe", "role", "date_embauche","dateCreation");
-        $values = array(strtolower($_POST['nom'] . '' . $_POST['prenom']), $_POST['nom'], $_POST['prenom'], $_POST['email'], $_POST['sexe'], $_POST['role'], date("Y-m-d", strtotime($_POST['hiringDtae'])),date("Y-m-d"));
-        $lastInsertedId = Database::insert("employe", $keys, $values);
 
-        $keys = array("id", "password");
-        $values = array($lastInsertedId, $_POST['password']);
-        Database::insert("admin", $keys, $values);
-        $success = $_POST['role']. " bien crée !";
-    }
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -154,6 +142,7 @@ if (!empty($_POST)) {
                     </li>
                 </ul>
             </nav>
+
             <div class="main-panel">
                 <div class="content-wrapper">
                     <div class="row">
@@ -257,6 +246,7 @@ if (!empty($_POST)) {
                     </div>
                 </div>
             </div>
+
         </div>
     </div>
 

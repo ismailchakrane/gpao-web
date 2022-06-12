@@ -1,30 +1,74 @@
+<?php
+session_start();
+if (empty($_SESSION['auth']) ||  !isset($_SESSION['auth'])  || $_SESSION['auth']['role'] != 'responsable de stock') {
+  header("location: ../../auth/logout.php");
+}
+
+
+// <?php
+//                         $products = Database::selectAllByOrder("product");
+//                         $flag = false;
+//                         foreach ($products as $product) {
+
+//                           $p = Database::select("fabrication","id_product",$product['code']);
+
+//                           if(empty($p))
+//                             continue;
+
+//                           if(strtotime($p[0]['dateFin']) < strtotime("now") && $product['state'] == "production" ){
+
+//                             Database::update("product",array("code"),array($product['code']),array("state"),array("protypz"));
+//                             $flag = true;
+//                           }
+//                         
+//                         if($flag){ 
+
+require_once "../../Utils/Database.php";
+
+if (!empty($_POST)) {
+    if(isset($_POST['ajoutStock'])){
+        $produit = Database::select("fabrication","id_product",$_POST['ajoutStock']);
+        Database::insert("stock_produit",array("id_produit","quantite"),array($_POST['ajoutStock'],$produit[0]['quantity']));
+        Database::delete("fabrication","id_product",$_POST['ajoutStock']);
+        header("location: consulterProduits.php");
+    }
+
+    if(isset($_POST['resolve'])){
+
+        $produit = Database::select("fabrication","id_product",$_POST['ajoutStock']);
+        Database::insert("stock_produit",array("id_produit","quantite"),array($_POST['ajoutStock'],$produit[0]['quantity']));
+        Database::delete("fabrication","id_product",$_POST['ajoutStock']);
+        header("location: consulterProduits.php");
+    }
+}
+
+?>
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
-  <!-- Required meta tags -->
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <title>Star Admin2 </title>
-  <!-- plugins:css -->
-  <link rel="stylesheet" href="../../vendors/feather/feather.css">
-  <link rel="stylesheet" href="../../vendors/mdi/css/materialdesignicons.min.css">
-  <link rel="stylesheet" href="../../vendors/ti-icons/css/themify-icons.css">
-  <link rel="stylesheet" href="../../vendors/typicons/typicons.css">
-  <link rel="stylesheet" href="../../vendors/simple-line-icons/css/simple-line-icons.css">
-  <link rel="stylesheet" href="../../vendors/css/vendor.bundle.base.css">
-  <!-- endinject -->
-  <!-- Plugin css for this page -->
-  <!-- End plugin css for this page -->
-  <!-- inject:css -->
-  <link rel="stylesheet" href="../../css/vertical-layout-light/style.css">
-  <!-- endinject -->
-  <link rel="shortcut icon" href="../../images/favicon.png" />
+  <title>Responsable de stock GPAO</title>
+  <link rel="stylesheet" href="../../ressources/vendors/feather/feather.css">
+  <link rel="stylesheet" href="../../ressources/vendors/mdi/css/materialdesignicons.min.css">
+  <link rel="stylesheet" href="../../ressources/vendors/ti-icons/css/themify-icons.css">
+  <link rel="stylesheet" href="../../ressources/vendors/typicons/typicons.css">
+  <link rel="stylesheet" href="../../ressources/vendors/simple-line-icons/css/simple-line-icons.css">
+  <link rel="stylesheet" href="../../ressources/vendors/css/vendor.bundle.base.css">
+  <link rel="stylesheet" href="../../ressources/css/vertical-layout-light/style.css">
+  <link rel="shortcut icon" href="../../ressources/images/favicon.png" />
+
+
+  <script src="assets/JS/nav.js" defer></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
 </head>
 
 <body>
   <div class="container-scroller">
-    <!-- partial:../../partials/_navbar.html -->
     <nav class="navbar default-layout col-lg-12 col-12 p-0 fixed-top d-flex align-items-top flex-row">
       <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-start">
         <div class="me-3">
@@ -33,31 +77,31 @@
           </button>
         </div>
         <div>
-          <a class="navbar-brand brand-logo" href="../../index.html">
-            <img src="../../images/logo.svg" alt="logo" />
+          <a class="navbar-brand brand-logo" href="index.php">
+            <img src="../..//ressources/images/logo.svg" alt="logo" />
           </a>
-          <a class="navbar-brand brand-logo-mini" href="../../index.html">
-            <img src="../../images/logo-mini.svg" alt="logo" />
+          <a class="navbar-brand brand-logo-mini" href="index.php">
+            <img src="../..//ressources/images/logo-mini.svg" alt="logo" />
           </a>
         </div>
       </div>
-      <div class="navbar-menu-wrapper d-flex align-items-top"> 
+      <div class="navbar-menu-wrapper d-flex align-items-top">
         <ul class="navbar-nav">
           <li class="nav-item font-weight-semibold d-none d-lg-block ms-0">
-            <h1 class="welcome-text">Good Morning, <span class="text-black fw-bold">John Doe</span></h1>
-            <h3 class="welcome-sub-text">Your performance summary this week </h3>
+            <h1 class="welcome-text">Bonjour, <span class="text-black fw-bold"><?php echo $_SESSION['auth']['nom'] . ' ' . $_SESSION['auth']['prenom']; ?></span></h1>
+            <h3 class="welcome-sub-text">Responsable de Stock</h3>
           </li>
         </ul>
         <ul class="navbar-nav ms-auto">
 
-         
+
           <li class="nav-item">
             <form class="search-form" action="#">
               <i class="icon-search"></i>
               <input type="search" class="form-control" placeholder="Search Here" title="Search here">
             </form>
           </li>
-          <li class="nav-item dropdown"> 
+          <li class="nav-item dropdown">
             <a class="nav-link count-indicator" id="countDropdown" href="#" data-bs-toggle="dropdown" aria-expanded="false">
               <i class="icon-bell"></i>
               <span class="count"></span>
@@ -102,11 +146,13 @@
               <img class="img-xs rounded-circle" src="../../images/faces/face8.jpg" alt="Profile image"> </a>
             <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="UserDropdown">
               <div class="dropdown-header text-center">
-                <img class="img-md rounded-circle" src="../../images/faces/face8.jpg" alt="Profile image">
-                <p class="mb-1 mt-3 font-weight-semibold">Allen Moreno</p>
-                <p class="fw-light text-muted mb-0">allenmoreno@gmail.com</p>
+                <img class="img-md rounded-circle" src="images/faces/face8.jpg" alt="Profile image">
+                <p class="mb-1 mt-3 font-weight-semibold"><?php echo $_SESSION['auth']['nom'] . ' ' . $_SESSION['auth']['prenom']; ?></p>
+                <p class="fw-light text-muted mb-0"><?php echo $_SESSION['auth']['email']; ?></p>
               </div>
-              <a class="dropdown-item"><i class="dropdown-item-icon mdi mdi-power text-primary me-2"></i>Sign Out</a>
+              <a class="dropdown-item"><i class="dropdown-item-icon mdi mdi-calendar-check-outline text-primary me-2"></i> Activity</a>
+              <a class="dropdown-item"><i class="dropdown-item-icon mdi mdi-help-circle-outline text-primary me-2"></i> FAQ</a>
+              <a class="dropdown-item" href="../../auth/logout.php"><i class="dropdown-item-icon mdi mdi-power text-primary me-2"></i>Sign Out</a>
             </div>
           </li>
         </ul>
@@ -115,9 +161,7 @@
         </button>
       </div>
     </nav>
-    <!-- partial -->
     <div class="container-fluid page-body-wrapper">
-      <!-- partial:../../partials/_settings-panel.html -->
 
       <div id="right-sidebar" class="settings-panel">
         <i class="settings-close ti-close"></i>
@@ -214,7 +258,8 @@
             </div>
             <ul class="chat-list">
               <li class="list active">
-                <div class="profile"><img src="../../images/faces/face1.jpg" alt="image"><span class="online"></span></div>
+                <div class="profile"><img src="../../images/faces/face1.jpg" alt="image"><span class="online"></span>
+                </div>
                 <div class="info">
                   <p>Thomas Douglas</p>
                   <p>Available</p>
@@ -222,7 +267,8 @@
                 <small class="text-muted my-auto">19 min</small>
               </li>
               <li class="list">
-                <div class="profile"><img src="../../images/faces/face2.jpg" alt="image"><span class="offline"></span></div>
+                <div class="profile"><img src="../../images/faces/face2.jpg" alt="image"><span class="offline"></span>
+                </div>
                 <div class="info">
                   <div class="wrapper d-flex">
                     <p>Catherine</p>
@@ -233,7 +279,8 @@
                 <small class="text-muted my-auto">23 min</small>
               </li>
               <li class="list">
-                <div class="profile"><img src="../../images/faces/face3.jpg" alt="image"><span class="online"></span></div>
+                <div class="profile"><img src="../../images/faces/face3.jpg" alt="image"><span class="online"></span>
+                </div>
                 <div class="info">
                   <p>Daniel Russell</p>
                   <p>Available</p>
@@ -241,7 +288,8 @@
                 <small class="text-muted my-auto">14 min</small>
               </li>
               <li class="list">
-                <div class="profile"><img src="../../images/faces/face4.jpg" alt="image"><span class="offline"></span></div>
+                <div class="profile"><img src="../../images/faces/face4.jpg" alt="image"><span class="offline"></span>
+                </div>
                 <div class="info">
                   <p>James Richardson</p>
                   <p>Away</p>
@@ -249,7 +297,8 @@
                 <small class="text-muted my-auto">2 min</small>
               </li>
               <li class="list">
-                <div class="profile"><img src="../../images/faces/face5.jpg" alt="image"><span class="online"></span></div>
+                <div class="profile"><img src="../../images/faces/face5.jpg" alt="image"><span class="online"></span>
+                </div>
                 <div class="info">
                   <p>Madeline Kennedy</p>
                   <p>Available</p>
@@ -257,7 +306,8 @@
                 <small class="text-muted my-auto">5 min</small>
               </li>
               <li class="list">
-                <div class="profile"><img src="../../images/faces/face6.jpg" alt="image"><span class="online"></span></div>
+                <div class="profile"><img src="../../images/faces/face6.jpg" alt="image"><span class="online"></span>
+                </div>
                 <div class="info">
                   <p>Sarah Graves</p>
                   <p>Available</p>
@@ -271,30 +321,28 @@
       </div>
 
 
-      
-      <!-- partial -->
-      <!-- partial:../../partials/_sidebar.html -->
+
       <nav class="sidebar sidebar-offcanvas" id="sidebar">
         <ul class="nav">
           <li class="nav-item">
-            <a class="nav-link" href="../../index.html">
+            <a class="nav-link" href="index.php">
               <i class="mdi mdi-grid-large menu-icon"></i>
               <span class="menu-title">Dashboard</span>
             </a>
           </li>
-          
 
-          <li class="nav-item nav-category">Coneption</li>
+
+          <li class="nav-item nav-category">Conception</li>
           <li class="nav-item">
             <a class="nav-link" data-bs-toggle="collapse" href="#form-elements" aria-expanded="false" aria-controls="form-elements">
-              <i class="menu-icon mdi mdi-card-text-outline"></i>
+              <i class="menu-icon mdi mdi-basket"></i>
               <span class="menu-title">Produits</span>
               <i class="menu-arrow"></i>
             </a>
             <div class="collapse" id="form-elements">
               <ul class="nav flex-column sub-menu">
-                <li class="nav-item"><a class="nav-link" href="../../pages/forms/basic_elements.html">Consulter les produits</a></li>
-                <li class="nav-item"><a class="nav-link" href="../../pages/forms/basic_elements.html">Ajouter un produit</a></li>
+                <li class="nav-item"><a class="nav-link" href="#">Consulter les
+                    produits</a></li>
               </ul>
             </div>
           </li>
@@ -302,18 +350,18 @@
 
           <li class="nav-item">
             <a class="nav-link" data-bs-toggle="collapse" href="#charts" aria-expanded="false" aria-controls="charts">
-              <i class="menu-icon mdi mdi-chart-line"></i>
+              <i class="menu-icon mdi mdi-replay"></i>
               <span class="menu-title">Matière première</span>
               <i class="menu-arrow"></i>
             </a>
             <div class="collapse" id="charts">
               <ul class="nav flex-column sub-menu">
-                <li class="nav-item"><a class="nav-link" href="../../pages/forms/basic_elements.html">Consulter les matières</a></li>
-                <li class="nav-item"><a class="nav-link" href="../../pages/forms/basic_elements.html">Ajouter une matière</a></li>
+                <li class="nav-item"><a class="nav-link" href="consulterMatieres.php">Consulter les
+                    matières</a></li>
               </ul>
             </div>
           </li>
-          
+
 
           <li class="nav-item nav-category">help</li>
           <li class="nav-item">
@@ -327,13 +375,13 @@
       <!-- partial -->
       <div class="main-panel">
         <div class="content-wrapper">
-          <div class="row">            
+          <div class="row">
             <div class="col-lg-12 grid-margin stretch-card">
               <div class="card">
                 <div class="card-body">
-                  <h4 class="card-title">Matières Premières</h4>
+                  <h4 class="card-title">Produits</h4>
                   <p class="card-description">
-                    Liste des matières premières
+                    Liste des produits
                   </p>
                   <div class="table-responsive">
                     <table class="table table-striped">
@@ -348,20 +396,78 @@
                           <th>
                             Description
                           </th>
+                          <th>
+                            Matières premières
+                          </th>
+                          <th>
+                            Date de modification
+                          </th>
+                          <th>
+                            Etat
+                          </th>
+                          <th>
+                            Actions
+                          </th>
                         </tr>
                       </thead>
                       <tbody>
-                        <tr>
-                          <td class="py-1">
-                            hada code
-                          </td>
-                          <td>
-                            Herman Beck
-                          </td>
-                          <td class = "template-demo">
-                            hjc jhdsc iudhcjhsd ishc hggdchjsd c uhdcj sdh uhdcusd hc
-                          </td>
-                        </tr>
+
+                        <?php
+                        $products = Database::selectAllByOrder("product");
+                            
+                        foreach ($products as $p) { ?>
+                          <tr>
+                            <td class="py-1">
+                              <?php echo $p['code']; ?>
+                            </td>
+                            <td>
+                              <?php echo $p['name']; ?>
+                            </td>
+                            <td>
+                              <?php echo $p['description']; ?>
+                            </td>
+                            <td>
+                              <?php
+                              $materials = Database::select("product_materials", "id_product", $p['code']);
+                              $materialsWithNames = "";
+                              $i  = 1;
+                              foreach ($materials as $m) {
+
+                                $nameMaterial = Database::select("materials", "id", $m['id_material']);
+                                if ($i == 1)
+                                  $materialsWithNames .= $nameMaterial[0]['name'] . '(' . $m['quantity'] . ')';
+                                else
+                                  $materialsWithNames .= ',   ' . $nameMaterial[0]['name'] . '(' . $m['quantity'] . ')';
+
+                                $i++;
+                              }
+
+                              echo $materialsWithNames;
+
+                              ?>
+                            </td>
+                            <td>
+                              <?php echo $p['dateE']; ?>
+                            </td>
+                            <td>
+                              <?php echo $p['state']; ?>
+                            </td>
+                            <td class="template-demo">
+                              <form method="POST" action="">
+                                <?php if($p['state'] == "bloque"){ ?>
+                                    <button type="submit" name="resolve"  value="<?php echo $p['code'] ?>" class="btn btn-outline-success btn-fw">Resolve</button>
+                                  <?php } else if($p['state'] == "completed" ){ ?>
+                                    <button type="submit" name="ajoutStock"  value="<?php echo $p['code'] ?>" class="btn btn-outline-success btn-fw">Ajouter au stock</button>
+                                <?php } ?>
+                              </form>
+                            </td>
+                          </tr>
+
+                        <?php
+                        }
+                        ?>
+
+
 
                       </tbody>
                     </table>
@@ -370,38 +476,22 @@
               </div>
             </div>
 
-
-
-
-           
-
-
           </div>
         </div>
-        <!-- content-wrapper ends -->
-        <!-- partial:../../partials/_footer.html -->
-        <!-- partial -->
       </div>
-      <!-- main-panel ends -->
     </div>
-    <!-- page-body-wrapper ends -->
   </div>
-  <!-- container-scroller -->
-  <!-- plugins:js -->
-  <script src="../../vendors/js/vendor.bundle.base.js"></script>
-  <!-- endinject -->
-  <!-- Plugin js for this page -->
-  <script src="../../vendors/bootstrap-datepicker/bootstrap-datepicker.min.js"></script>
-  <!-- End plugin js for this page -->
-  <!-- inject:js -->
-  <script src="../../js/off-canvas.js"></script>
-  <script src="../../js/hoverable-collapse.js"></script>
-  <script src="../../js/template.js"></script>
-  <script src="../../js/settings.js"></script>
-  <script src="../../js/todolist.js"></script>
-  <!-- endinject -->
-  <!-- Custom js for this page-->
-  <!-- End custom js for this page-->
+
+
+  <script src="../../ressources/vendors/js/vendor.bundle.base.js"></script>
+  <script src="../../ressources/vendors/bootstrap-datepicker/bootstrap-datepicker.min.js"></script>
+  <script src="../../ressources/js/off-canvas.js"></script>
+  <script src="../../ressources/js/hoverable-collapse.js"></script>
+  <script src="../../ressources/js/template.js"></script>
+  <script src="../../ressources/js/settings.js"></script>
+  <script src="../../ressources/js/todolist.js"></script>
+
+
 </body>
 
 </html>
