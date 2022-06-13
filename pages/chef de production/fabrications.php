@@ -15,7 +15,7 @@ require_once "../../Utils/Database.php";
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>Responsable de production GPAO</title>
+    <title>Chef de production GPAO</title>
     <link rel="stylesheet" href="../../ressources/vendors/feather/feather.css">
     <link rel="stylesheet" href="../../ressources/vendors/mdi/css/materialdesignicons.min.css">
     <link rel="stylesheet" href="../../ressources/vendors/ti-icons/css/themify-icons.css">
@@ -48,7 +48,7 @@ require_once "../../Utils/Database.php";
                 <ul class="navbar-nav">
                     <li class="nav-item font-weight-semibold d-none d-lg-block ms-0">
                         <h1 class="welcome-text">Bonjour, <span class="text-black fw-bold"><?php echo $_SESSION['auth']['nom'] . ' ' . $_SESSION['auth']['prenom']; ?></span></h1>
-                        <h3 class="welcome-sub-text">Respondable de production</h3>
+                        <h3 class="welcome-sub-text">chef de production</h3>
                     </li>
                 </ul>
                 <ul class="navbar-nav ms-auto">
