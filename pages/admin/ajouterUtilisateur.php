@@ -67,58 +67,16 @@ if (!empty($_POST)) {
                     </li>
                 </ul>
                 <ul class="navbar-nav ms-auto">
-                    <li class="nav-item dropdown">
-                        <a class="nav-link count-indicator" id="countDropdown" href="#" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="icon-bell"></i>
-                            <span class="count"></span>
-                        </a>
-                        <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list pb-0" aria-labelledby="countDropdown">
-                            <a class="dropdown-item py-3">
-                                <p class="mb-0 font-weight-medium float-left">You have 7 unread mails </p>
-                                <span class="badge badge-pill badge-primary float-right">View all</span>
-                            </a>
-                            <div class="dropdown-divider"></div>
-                            <a class="dropdown-item preview-item">
-                                <div class="preview-thumbnail">
-                                    <img src="images/faces/face10.jpg" alt="image" class="img-sm profile-pic">
-                                </div>
-                                <div class="preview-item-content flex-grow py-2">
-                                    <p class="preview-subject ellipsis font-weight-medium text-dark">Marian Garner </p>
-                                    <p class="fw-light small-text mb-0"> The meeting is cancelled </p>
-                                </div>
-                            </a>
-                            <a class="dropdown-item preview-item">
-                                <div class="preview-thumbnail">
-                                    <img src="images/faces/face12.jpg" alt="image" class="img-sm profile-pic">
-                                </div>
-                                <div class="preview-item-content flex-grow py-2">
-                                    <p class="preview-subject ellipsis font-weight-medium text-dark">David Grey </p>
-                                    <p class="fw-light small-text mb-0"> The meeting is cancelled </p>
-                                </div>
-                            </a>
-                            <a class="dropdown-item preview-item">
-                                <div class="preview-thumbnail">
-                                    <img src="images/faces/face1.jpg" alt="image" class="img-sm profile-pic">
-                                </div>
-                                <div class="preview-item-content flex-grow py-2">
-                                    <p class="preview-subject ellipsis font-weight-medium text-dark">Travis Jenkins </p>
-                                    <p class="fw-light small-text mb-0"> The meeting is cancelled </p>
-                                </div>
-                            </a>
-                        </div>
 
-                    </li>
                     <li class="nav-item dropdown d-none d-lg-block user-dropdown">
                         <a class="nav-link" id="UserDropdown" href="#" data-bs-toggle="dropdown" aria-expanded="false">
-                            <img class="img-xs rounded-circle" src="../../images/faces/face8.jpg" alt="Profile image"> </a>
+                            <img class="img-xs rounded-circle" src="../../ressources/images/face.jpg" alt="Profile image"> </a>
                         <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="UserDropdown">
                             <div class="dropdown-header text-center">
-                                <img class="img-md rounded-circle" src="images/faces/face8.jpg" alt="Profile image">
+                                <img class="img-md rounded-circle" src="../../ressources/images/face.jpg" alt="Profile image">
                                 <p class="mb-1 mt-3 font-weight-semibold"><?php echo $_SESSION['auth']['nom'] . ' ' . $_SESSION['auth']['prenom']; ?></p>
                                 <p class="fw-light text-muted mb-0"><?php echo $_SESSION['auth']['email'] ;?></p>
                             </div>
-                            <a class="dropdown-item"><i class="dropdown-item-icon mdi mdi-calendar-check-outline text-primary me-2"></i> Activity</a>
-                            <a class="dropdown-item"><i class="dropdown-item-icon mdi mdi-help-circle-outline text-primary me-2"></i> FAQ</a>
                             <a class="dropdown-item" href="../../auth/logout.php"><i class="dropdown-item-icon mdi mdi-power text-primary me-2"></i>Sign Out</a>
                         </div>
                     </li>
@@ -131,22 +89,19 @@ if (!empty($_POST)) {
         <div class="container-fluid page-body-wrapper">
             <nav class="sidebar sidebar-offcanvas" id="sidebar">
                 <ul class="nav">
-                    <li class="nav-item">
-                        <a class="nav-link" href="index.php">
-                            <i class="mdi mdi-grid-large menu-icon"></i>
-                            <span class="menu-title">Dashboard</span>
-                        </a>
-                    </li>
-                    <li class="nav-item nav-category">Services</li>
+                  
+                    <li class="nav-item nav-category">Administration</li>
                     <li class="nav-item">
                         <a class="nav-link" data-bs-toggle="collapse" href="#ui-basic" aria-expanded="false" aria-controls="ui-basic">
                             <i class="menu-icon mdi mdi-account"></i>
-                            <span class="menu-title">Users</span>
+                            <span class="menu-title">Utilisateurs</span>
                             <i class="menu-arrow"></i>
                         </a>
                         <div class="collapse" id="ui-basic">
                             <ul class="nav flex-column sub-menu">
                                 <li class="nav-item"> <a class="nav-link" href="#">Nouveau Utilisateur</a></li>
+                                <li class="nav-item"> <a class="nav-link" href="consulterUtilisateurs.php">Consulter Utilisateurs</a></li>
+
                             </ul>
                         </div>
                     </li>

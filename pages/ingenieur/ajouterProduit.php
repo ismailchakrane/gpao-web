@@ -20,21 +20,18 @@ if (!empty($_POST)) {
     Database::insert("product", $keys, $values);
 
     $keys = array("id_product", "id_material", "quantity");
-    $mts = Database::selectAll("materials");
-    $stringMaterial = $_POST['materilas'];
-    
+    $stringMaterial = $_POST['materials'];
 
-    foreach ($mts as $m) {
-      if (!empty($_POST[$m['code']])) {
-        $qt = "q" .  $m['code'];
-        $values = array(str_replace(' ', '', $_POST["code"]), $m['code'], $_POST[$qt]);
+    $materials = explode(" ", $stringMaterial);
+
+    for ($i = 0; $i < count($materials) ; $i++) {
+      if(strpos($materials[$i], '(') !== false) {
+        $values = array(str_replace(' ', '', $_POST["code"]), $materials[$i-1], substr($materials[$i], 1, -1));
         Database::insert("product_materials", $keys, $values);
+      }
       }
     };
   }
-}
-
-
 
 ?>
 <!DOCTYPE html>
@@ -43,7 +40,7 @@ if (!empty($_POST)) {
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <title>Ingenieur Admin</title>
+  <title>Ingenieur GPAO</title>
   <link rel="stylesheet" href="../../ressources/vendors/feather/feather.css">
   <link rel="stylesheet" href="../../ressources/vendors/mdi/css/materialdesignicons.min.css">
   <link rel="stylesheet" href="../../ressources/vendors/ti-icons/css/themify-icons.css">
@@ -84,15 +81,13 @@ if (!empty($_POST)) {
         <ul class="navbar-nav ms-auto">
           <li class="nav-item dropdown d-none d-lg-block user-dropdown">
             <a class="nav-link" id="UserDropdown" href="#" data-bs-toggle="dropdown" aria-expanded="false">
-              <img class="img-xs rounded-circle" src="../../images/faces/face8.jpg" alt="Profile image"> </a>
+              <img class="img-xs rounded-circle" src="../../ressources/images/face.jpg" alt="Profile image"> </a>
             <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="UserDropdown">
               <div class="dropdown-header text-center">
-                <img class="img-md rounded-circle" src="images/faces/face8.jpg" alt="Profile image">
+                <img class="img-md rounded-circle" src="../../ressources/images/face.jpg" alt="Profile image">
                 <p class="mb-1 mt-3 font-weight-semibold"><?php echo $_SESSION['auth']['nom'] . ' ' . $_SESSION['auth']['prenom']; ?></p>
                 <p class="fw-light text-muted mb-0"><?php echo $_SESSION['auth']['email']; ?></p>
               </div>
-              <a class="dropdown-item"><i class="dropdown-item-icon mdi mdi-calendar-check-outline text-primary me-2"></i> Activity</a>
-              <a class="dropdown-item"><i class="dropdown-item-icon mdi mdi-help-circle-outline text-primary me-2"></i> FAQ</a>
               <a class="dropdown-item" href="../../auth/logout.php"><i class="dropdown-item-icon mdi mdi-power text-primary me-2"></i>Sign Out</a>
             </div>
           </li>
@@ -107,12 +102,7 @@ if (!empty($_POST)) {
 
       <nav class="sidebar sidebar-offcanvas" id="sidebar">
         <ul class="nav">
-          <li class="nav-item">
-            <a class="nav-link" href="index.php">
-              <i class="mdi mdi-grid-large menu-icon"></i>
-              <span class="menu-title">Dashboard</span>
-            </a>
-          </li>
+          
 
 
           <li class="nav-item nav-category">Conception</li>
@@ -145,14 +135,6 @@ if (!empty($_POST)) {
             </div>
           </li>
 
-
-          <li class="nav-item nav-category">help</li>
-          <li class="nav-item">
-            <a class="nav-link" href="http://bootstrapdash.com/demo/star-admin2-free/docs/documentation.html">
-              <i class="menu-icon mdi mdi-file-document"></i>
-              <span class="menu-title">Documentation</span>
-            </a>
-          </li>
         </ul>
       </nav>
 
@@ -258,27 +240,25 @@ if (!empty($_POST)) {
                     </div>
 
 
-                    <div class="row">
-                      <div class="col-md-6">
+                    <div class="row" style="padding: 0 100px">
+
+
+                    <div class="col-md-6">
                         <div class="form-group row">
-                          <ol>
-                          </ol>
-
-
-                          <div class="form-check">
-                            <button type="button" id="ajoutMatiere" class="btn btn-primary btn-icon-text">
-                              Ajouter matière première
-                            </button>
-                          </div>
+                          <button type="submit" class="btn btn-primary btn-icon-text col-sm-5">
+                            Ajouter le produit
+                          </button>
                         </div>
                       </div>
 
 
                       <div class="col-md-6">
                         <div class="form-group row">
-                          <button type="submit" class="btn btn-primary btn-icon-text col-sm-5">
-                            Ajouter le produit
-                          </button>
+                          <div class="form-check">
+                            <button type="button" id="ajoutMatiere" class="btn btn-primary btn-icon-text">
+                              Ajouter matière première
+                            </button>
+                          </div>
                         </div>
                       </div>
 
@@ -306,7 +286,7 @@ if (!empty($_POST)) {
             matiere = $('#matiere').val();
             quantité = $('#quantite').val();
             if(quantité != ""){
-              $("#appendUlItems").val($("#appendUlItems").val() + matiere + ' (' + quantité + ')' + ', ');
+              $("#appendUlItems").val($("#appendUlItems").val() + matiere + ' (' + quantité + ')' + ' ');
 
             }
 

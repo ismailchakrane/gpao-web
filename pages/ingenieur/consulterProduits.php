@@ -122,15 +122,6 @@ if (!empty($_POST)) {
               </ul>
             </div>
           </li>
-
-
-          <li class="nav-item nav-category">help</li>
-          <li class="nav-item">
-            <a class="nav-link" href="http://bootstrapdash.com/demo/star-admin2-free/docs/documentation.html">
-              <i class="menu-icon mdi mdi-file-document"></i>
-              <span class="menu-title">Documentation</span>
-            </a>
-          </li>
         </ul>
       </nav>
 
@@ -208,7 +199,7 @@ if (!empty($_POST)) {
                             <td class="template-demo">
                               <form method="POST" action="">
                                 <?php if ($p['creator'] == $_SESSION['auth']['id']) : ?>
-                                  <button type="submit" name="modifier"  value="<?php echo $p['code'] ?>" class="btn btn-outline-warning btn-fw">Modifer</button>
+                                  <button type="submit" name="modifier"  value="<?php echo $p['code'] ?>" class="btn btn-outline-warning btn-fw">Modifer</button>   
                                   <button type="submit" name="supprimer" value="<?php echo $p['code'] ?>" class="btn btn-outline-danger btn-fw">Supprimer</button>
 
                                 <?php endif; ?>
