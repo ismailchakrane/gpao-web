@@ -32,7 +32,6 @@ CREATE TABLE IF NOT EXISTS `employe` (
   UNIQUE KEY `email` (`email`)
 ) ;
 
--
 
 DROP TABLE IF EXISTS `fabrication`;
 CREATE TABLE IF NOT EXISTS `fabrication` (
@@ -73,4 +72,4 @@ CREATE TABLE IF NOT EXISTS `product_materials` (
   `id_material` varchar(11) NOT NULL,
   `quantity` double NOT NULL
 ) ;
-COMMIT;
+
